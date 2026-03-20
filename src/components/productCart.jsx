@@ -1,33 +1,12 @@
 export default function ProductCart() {
-    return (
-        <div style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            backgroundColor: "#f5f5f5"
-        }}>
-            <div style={{
-                padding: "30px",
-                borderRadius: "12px",
-                backgroundColor: "#ffffff",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                textAlign: "center"
-            }}>
-                <h1 style={{
-                    margin: 0,
-                    fontSize: "28px",
-                    color: "#333"
-                }}>
-                    🛒 Product Cart
-                </h1>
-                <p style={{
-                    marginTop: "10px",
-                    color: "#777"
-                }}>
-                    Your selected products will appear here
-                </p>
-            </div>
-        </div>
-    );
+  return (
+    <div className="w-full min-h-screen flex justify-center items-center bg-[#FCF8FF] px-4">
+      <div className="p-8 rounded-2xl bg-white shadow-lg text-center max-w-md w-full">
+        <h1 className="text-3xl font-bold text-[#8A5FBF]">🛒 Product Cart</h1>
+        <p className="mt-3 text-gray-500">
+          Your selected products will appear here
+        </p>
+      </div>
+    </div>
+  );
 }

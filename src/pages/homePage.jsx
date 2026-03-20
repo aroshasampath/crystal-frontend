@@ -4,19 +4,101 @@ import NotFoundPage from "./404Page";
 import ContactPage from "./contactusPage";
 import AboutPage from "./aboutPage";
 
-export default function HomePage(){
-    return (
-        <div>
-           <Header/>
+function HomeLandingPage() {
+  return (
+    <div className="w-full min-h-[calc(100vh-75px)] bg-[#FCF8FF]">
+      <section className="px-6 md:px-12 py-16">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <p className="text-[#8A5FBF] font-semibold tracking-wide uppercase mb-4">
+              Premium Cosmetic Collection
+            </p>
 
-           <Routes>
-               <Route path="/" element={<h1>home page</h1>} />
-               <Route path="/products" element={<h1>product page</h1>} />
-               <Route path="/about" element={<AboutPage/>} />
-               <Route path="/contact" element={<ContactPage/>} />
-               <Route path="/*" element={<NotFoundPage/>} />
-           </Routes>
+            <h1 className="text-4xl md:text-6xl font-bold text-[#2F2A2E] leading-tight">
+              Glow With Confidence, Shine With Beauty ✨
+            </h1>
 
+            <p className="text-gray-600 mt-6 text-lg leading-8 max-w-xl">
+              Discover skincare and beauty essentials crafted to elevate your
+              daily self-care routine with elegance, softness, and confidence.
+            </p>
+
+            <div className="flex flex-wrap gap-4 mt-8">
+              <a
+                href="/products"
+                className="px-6 py-3 bg-[#8A5FBF] text-white rounded-full shadow-md hover:bg-[#7a4ec0] transition"
+              >
+                Shop Now
+              </a>
+              <a
+                href="/about"
+                className="px-6 py-3 bg-white text-[#8A5FBF] border border-[#D9C2F0] rounded-full shadow-sm hover:bg-[#F8F1FF] transition"
+              >
+                Learn More
+              </a>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <img
+              src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80"
+              alt="Beauty products"
+              className="w-full max-w-xl h-[500px] object-cover rounded-[30px] shadow-xl"
+            />
+          </div>
         </div>
-    )
+      </section>
+    </div>
+  );
+}
+
+function ProductPagePlaceholder() {
+  return (
+    <div className="w-full min-h-[calc(100vh-75px)] bg-[#FCF8FF] px-6 py-12">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold text-[#8A5FBF]">Our Products</h1>
+        <p className="text-gray-600 mt-3">
+          Explore premium beauty items curated for your perfect glow.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+          {[1, 2, 3, 4, 5, 6].map((item) => (
+            <div
+              key={item}
+              className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition"
+            >
+              <div className="h-60 bg-[#F3EAFE]"></div>
+              <div className="p-5">
+                <h2 className="text-xl font-semibold text-[#2F2A2E]">
+                  Beauty Product {item}
+                </h2>
+                <p className="text-gray-500 mt-2">
+                  Premium cosmetic item for your daily glow routine.
+                </p>
+                <button className="mt-4 px-4 py-2 bg-[#8A5FBF] text-white rounded-lg hover:bg-[#7448aa] transition">
+                  View Product
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen">
+      <Header />
+
+      <Routes>
+        <Route index element={<HomeLandingPage />} />
+        <Route path="products" element={<ProductPagePlaceholder />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="contact" element={<ContactPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </div>
+  );
 }

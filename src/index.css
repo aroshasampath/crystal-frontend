@@ -1,7 +1,25 @@
 @import "tailwindcss";
 
-@theme{
-    --color-accent :#8A5FBF
-    --color-primary :#D9C2F0
-    --color-secondary :#FCF8FF
+:root {
+  --color-accent: #8A5FBF;
+  --color-primary: #D9C2F0;
+  --color-secondary: #FCF8FF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-secondary);
+  color: #2F2A2E;
 }
