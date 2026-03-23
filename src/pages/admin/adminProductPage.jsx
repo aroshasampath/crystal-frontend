@@ -1,12 +1,87 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+
+function ProductDeleteConfirm(props) {
+  const productID = props.productID;
+  const close = props.close;
+  const onDeleted = props.onDeleted;
+
+  function deleteProduct() {
+    const token = localStorage.getItem("token");
+    axios
+      .delete(import.meta.env.VITE_API_URL + "/api/products/" + productID, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        close();
+        onDeleted();
+        toast.success("Product deleted successfully");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Failed to delete product");
+      });
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex justify-center items-center px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] p-6 relative animate-[fadeIn_0.2s_ease]">
+        <button
+          onClick={close}
+          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-red-100 text-red-600 font-bold flex items-center justify-center hover:bg-red-200 transition"
+        >
+          ✕
+        </button>
+
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+          <span className="text-2xl text-red-600">!</span>
+        </div>
+
+        <h1 className="text-xl font-bold text-center text-[#2F2A2E] mb-2">
+          Delete Product
+        </h1>
+
+        <p className="text-center text-[#666] text-sm mb-6">
+          Are you sure you want to delete the product {productID} ?
+          <br />
+          <span className="text-red-500 font-medium">
+            This action cannot be undone.
+          </span>
+        </p>
+
+        <div className="flex justify-center gap-3">
+          <button
+            onClick={close}
+            className="px-5 py-2 rounded-lg border border-[#D9C2F0] text-[#6B4B93] font-medium hover:bg-[#F8F1FF] transition"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={deleteProduct}
+            className="px-5 py-2 rounded-lg bg-red-600 text-white font-semibold shadow-md hover:bg-red-700 transition"
+          >
+            Yes, Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminProductPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -24,10 +99,22 @@ export default function AdminProductPage() {
         setError("Failed to load products");
         setLoading(false);
       });
-  }, []);
+  }, [isLoading]);
 
   return (
     <div className="w-full h-full p-4">
+      {isDeleteConfirmVisible && (
+        <ProductDeleteConfirm
+          productID={productToDelete}
+          close={() => {
+            setIsDeleteConfirmVisible(false);
+          }}
+          onDeleted={() => {
+            setIsLoading((prev) => !prev);
+          }}
+        />
+      )}
+
       <div className="w-full flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[#8A5FBF]">Admin Products</h1>
 
@@ -110,7 +197,13 @@ export default function AdminProductPage() {
                         >
                           Edit
                         </button>
-                        <button className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+                        <button
+                          onClick={() => {
+                            setProductToDelete(item.productID);
+                            setIsDeleteConfirmVisible(true);
+                          }}
+                          className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+                        >
                           Delete
                         </button>
                       </div>

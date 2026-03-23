@@ -3,6 +3,7 @@ import Header from "../components/header";
 import NotFoundPage from "./404Page";
 import ContactPage from "./contactusPage";
 import AboutPage from "./aboutPage";
+import ProductPage from "./productPage";
 
 function HomeLandingPage() {
   return (
@@ -52,40 +53,7 @@ function HomeLandingPage() {
   );
 }
 
-function ProductPagePlaceholder() {
-  return (
-    <div className="w-full min-h-[calc(100vh-75px)] bg-[#FCF8FF] px-6 py-12">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-[#8A5FBF]">Our Products</h1>
-        <p className="text-gray-600 mt-3">
-          Explore premium beauty items curated for your perfect glow.
-        </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-          {[1, 2, 3, 4, 5, 6].map((item) => (
-            <div
-              key={item}
-              className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition"
-            >
-              <div className="h-60 bg-[#F3EAFE]"></div>
-              <div className="p-5">
-                <h2 className="text-xl font-semibold text-[#2F2A2E]">
-                  Beauty Product {item}
-                </h2>
-                <p className="text-gray-500 mt-2">
-                  Premium cosmetic item for your daily glow routine.
-                </p>
-                <button className="mt-4 px-4 py-2 bg-[#8A5FBF] text-white rounded-lg hover:bg-[#7448aa] transition">
-                  View Product
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function HomePage() {
   return (
@@ -94,7 +62,7 @@ export default function HomePage() {
 
       <Routes>
         <Route index element={<HomeLandingPage />} />
-        <Route path="products" element={<ProductPagePlaceholder />} />
+        <Route path="products" element={<ProductPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />
