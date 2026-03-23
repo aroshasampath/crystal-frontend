@@ -4,9 +4,11 @@ import {
   MdShoppingBag,
   MdShoppingCart,
   MdPeople,
+  MdEdit
 } from "react-icons/md";
 import AddProduct from "./admin/adminAddNewProducts";
 import AdminProductPage from "./admin/adminProductPage";
+import UpdateProducts from "./admin/adminUpdateProduct";
 
 export default function AdminPage() {
   return (
@@ -42,6 +44,7 @@ export default function AdminPage() {
             <MdShoppingBag size={22} />
             <span>Products</span>
           </Link>
+          
 
           <Link
             to="/admin/users"
@@ -91,6 +94,7 @@ export default function AdminPage() {
             />
             <Route path="products" element={<AdminProductPage />} />
             <Route path="add-products" element={<AddProduct />} />
+            <Route path="update-products" element={<UpdateProducts />} />
             <Route
               path="orders"
               element={

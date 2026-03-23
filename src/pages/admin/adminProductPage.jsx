@@ -1,11 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function AdminProductPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -67,6 +68,7 @@ export default function AdminProductPage() {
                 <th className="p-4">Price</th>
                 <th className="p-4">Labeled Price</th>
                 <th className="p-4">Category</th>
+                <th className="p-4">Stock</th>
                 <th className="p-4 text-center">Actions</th>
               </tr>
             </thead>
@@ -95,9 +97,17 @@ export default function AdminProductPage() {
                     <td className="p-4">Rs. {item?.price ?? 0}</td>
                     <td className="p-4">Rs. {item?.labledPrice ?? 0}</td>
                     <td className="p-4">{item?.category || "-"}</td>
+                    <td className="p-4">{item?.stock ?? 0}</td>
                     <td className="p-4">
                       <div className="flex items-center justify-center gap-2">
-                        <button className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+                        <button
+                          onClick={() => {
+                            navigate("/admin/update-products", {
+                              state: item,
+                            });
+                          }}
+                          className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                        >
                           Edit
                         </button>
                         <button className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
