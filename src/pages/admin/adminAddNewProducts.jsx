@@ -1,9 +1,8 @@
-import axios from "axios";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import MediaUpload from "../../utills/mediaUpload";
-
+import mediaUpload from "../../utills/mediaUpload";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function AddProducts() {
   const [productID, setProductID] = useState("");
@@ -11,316 +10,274 @@ export default function AddProducts() {
   const [altNames, setAltNames] = useState("");
   const [discription, setDiscription] = useState("");
   const [images, setImages] = useState([]);
-  const [price, setPrice] = useState(0);
-  const [labledPrice, setLabledPrice] = useState(0);
-  const [category, setCategory] = useState("cream");
-  const [stock, setStock] = useState(0);
+  const [price, setPrice] = useState("");
+  const [labledPrice, setLabledPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [stock, setStock] = useState("");
   const navigate = useNavigate();
 
-  async function AddProduct() {
+  async function addProduct(){
     const token = localStorage.getItem("token");
-    if (token == null) {
-      navigate("/login");
+    if(token == null){
+      navigate("/login")
       return;
     }
-
     const promises = [];
-    for (let i = 0; i < images.length; i++) {
-      promises[i] = MediaUpload(images[i]);
+    for(let i=0; i < images.length;i++){
+      promises[i] = mediaUpload(images[i]);
+
     }
-
-    try {
+    try{
       const urls = await Promise.all(promises);
-      const altNamesArray = altNames.split(",");
-
-      const product = {
+      const alternativeNames = altNames.split(",");
+      const product ={
         productID: productID,
         name: name,
-        altNames: altNamesArray,
+        altNames: alternativeNames,
         discription: discription,
         images: urls,
         price: price,
         labledPrice: labledPrice,
         category: category,
-        stock: stock,
-      };
-
-      await axios.post(
-        import.meta.env.VITE_API_URL + "/api/products",
-        product,
+        stock: stock
+      }
+      await axios.post(import.meta.env.VITE_API_URL + "/api/products", product,
         {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
+          headers:{
+            Authorization: "Bearer " + token
+          }
         }
       );
-
       toast.success("Product added successfully");
-      console.log(urls);
       navigate("/admin/products");
-    } catch (e) {
-      toast.error("An error occured");
+  }catch{
+      toast.error("an error occured while uploading") 
     }
+ 
+    
   }
 
+  
+
   return (
-    <div
-      className="w-full min-h-screen flex justify-center items-center px-4 py-10 relative overflow-hidden"
-      style={{ backgroundColor: "#FCF8FF" }}
-    >
-      <div
-        className="absolute top-[-80px] left-[-80px] w-[220px] h-[220px] rounded-full blur-3xl opacity-40"
-        style={{ backgroundColor: "#D9C2F0" }}
-      ></div>
-      <div
-        className="absolute bottom-[-100px] right-[-80px] w-[260px] h-[260px] rounded-full blur-3xl opacity-40"
-        style={{ backgroundColor: "#D9C2F0" }}
-      ></div>
-
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="w-full max-w-4xl rounded-[32px] border shadow-2xl p-6 md:p-10 backdrop-blur-sm relative z-10"
-        style={{
-          backgroundColor: "#ffffff",
-          borderColor: "#D9C2F0",
-          boxShadow: "0 20px 60px rgba(138, 95, 191, 0.12)",
-        }}
-      >
-        <div className="mb-10 text-center">
-          <div
-            className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center text-2xl shadow-md"
-            style={{ backgroundColor: "#D9C2F0", color: "#8A5FBF" }}
-          >
-            ✨
+    <div className="w-full min-h-screen bg-[#FCF8FF] flex justify-center items-center px-4 py-10">
+      <div className="w-full max-w-4xl bg-white rounded-[28px] shadow-[0_20px_60px_rgba(138,95,191,0.18)] border border-[#D9C2F0] overflow-hidden">
+        
+        <div className="bg-gradient-to-r from-[#8A5FBF] to-[#B08AD9] px-8 py-7">
+          <div className="flex flex-col gap-2">
+            <span className="w-fit px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold tracking-[0.2em] uppercase">
+              Crystal Beauty Admin
+            </span>
+            <h1 className="text-3xl md:text-4xl font-bold text-white">
+              Add New Product
+            </h1>
+            <p className="text-[#F8F1FF] mt-1 text-sm md:text-base max-w-2xl">
+              Create and organize premium beauty products for the Crystal Beauty store dashboard.
+            </p>
           </div>
-
-          <h1
-            className="text-3xl md:text-4xl font-bold tracking-tight"
-            style={{ color: "#8A5FBF" }}
-          >
-            Crystal Beauty
-          </h1>
-
-          <p className="text-sm md:text-base mt-2 text-gray-500">
-            Add a new cosmetic product to your premium beauty collection
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Product ID
-            </label>
-            <input
-              type="text"
-              value={productID}
-              onChange={(e) => {
-                setProductID(e.target.value);
-              }}
-              placeholder="Enter product ID"
-              className="w-full rounded-2xl border px-4 py-3.5 outline-none transition-all duration-200 bg-white"
-              style={{
-                borderColor: "#D9C2F0",
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Product Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-              placeholder="Enter product name"
-              className="w-full rounded-2xl border px-4 py-3.5 outline-none transition-all duration-200 bg-white"
-              style={{
-                borderColor: "#D9C2F0",
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2 md:col-span-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Alternative Names
-            </label>
-            <input
-              type="text"
-              value={altNames}
-              onChange={(e) => {
-                setAltNames(e.target.value);
-              }}
-              placeholder="Example: glow cream, brightening cream"
-              className="w-full rounded-2xl border px-4 py-3.5 outline-none transition-all duration-200 bg-white"
-              style={{
-                borderColor: "#D9C2F0",
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2 md:col-span-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Discription
-            </label>
-            <textarea
-              value={discription}
-              onChange={(e) => {
-                setDiscription(e.target.value);
-              }}
-              placeholder="Write product description..."
-              rows={5}
-              className="w-full rounded-2xl border px-4 py-3.5 outline-none resize-none transition-all duration-200 bg-white"
-              style={{
-                borderColor: "#D9C2F0",
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Category
-            </label>
-            <select
-              value={category}
-              onChange={(e) => {
-                setCategory(e.target.value);
-              }}
-              className="w-full rounded-2xl border px-4 py-3.5 outline-none bg-white transition-all duration-200"
-              style={{
-                borderColor: "#D9C2F0",
-              }}
-            >
-              <option value="cream">Cream</option>
-              <option value="serum">Serum</option>
-              <option value="cleanser">Cleanser</option>
-              <option value="toner">Toner</option>
-              <option value="moisturizer">Moisturizer</option>
-              <option value="sunscreen">Sunscreen</option>
-              <option value="face-wash">Face Wash</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Product Images
-            </label>
-
-            <div
-              className="w-full rounded-2xl border px-4 py-4 bg-white"
-              style={{ borderColor: "#D9C2F0" }}
-            >
-              <input
-                type="file"
-                onChange={(e) => {
-                  setImages(e.target.files);
-                }}
-                multiple
-                className="w-full text-sm outline-none"
-              />
-              <p className="text-xs text-gray-400 mt-2">
-                Upload one or more product images
+        <div className="p-8 md:p-10">
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="rounded-2xl border border-[#E9DDF7] bg-[#FCF8FF] px-5 py-4">
+              <p className="text-xs font-medium text-[#8A5FBF] uppercase tracking-wider">
+                Store
               </p>
+              <h3 className="text-lg font-bold text-[#4B2E68] mt-1">
+                Crystal Beauty
+              </h3>
+            </div>
+
+            <div className="rounded-2xl border border-[#E9DDF7] bg-[#FCF8FF] px-5 py-4">
+              <p className="text-xs font-medium text-[#8A5FBF] uppercase tracking-wider">
+                Section
+              </p>
+              <h3 className="text-lg font-bold text-[#4B2E68] mt-1">
+                Product Management
+              </h3>
+            </div>
+
+            <div className="rounded-2xl border border-[#E9DDF7] bg-[#FCF8FF] px-5 py-4">
+              <p className="text-xs font-medium text-[#8A5FBF] uppercase tracking-wider">
+                Type
+              </p>
+              <h3 className="text-lg font-bold text-[#4B2E68] mt-1">
+                Cosmetics & Skincare
+              </h3>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Price
-            </label>
-            <input
-              type="number"
-              value={price}
-              onChange={(e) => {
-                setPrice(e.target.value);
-              }}
-              placeholder="Enter price"
-              className="w-full rounded-2xl border px-4 py-3.5 outline-none transition-all duration-200 bg-white"
-              style={{
-                borderColor: "#D9C2F0",
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Labeled Price
-            </label>
-            <input
-              type="number"
-              value={labledPrice}
-              onChange={(e) => {
-                setLabledPrice(e.target.value);
-              }}
-              placeholder="Enter labeled price"
-              className="w-full rounded-2xl border px-4 py-3.5 outline-none transition-all duration-200 bg-white"
-              style={{
-                borderColor: "#D9C2F0",
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2 md:col-span-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Stock Quantity
-            </label>
-            <input
-              type="number"
-              value={stock}
-              onChange={(e) => {
-                setStock(e.target.value);
-              }}
-              placeholder="Enter available stock"
-              className="w-full rounded-2xl border px-4 py-3.5 outline-none transition-all duration-200 bg-white"
-              style={{
-                borderColor: "#D9C2F0",
-              }}
-            />
-          </div>
-        </div>
-
-        <div
-          className="mt-8 rounded-2xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
-          style={{ backgroundColor: "#FCF8FF" }}
-        >
-          <div>
-            <h3 className="font-semibold" style={{ color: "#8A5FBF" }}>
-              Crystal Beauty Admin Panel
-            </h3>
-            <p className="text-sm text-gray-500">
-              Make sure all product details are correct before submitting.
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-[#4B2E68]">Product Information</h2>
+            <p className="text-sm text-[#7A6598] mt-1">
+              Enter the product details below to list a new beauty item.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Product ID
+              </label>
+              <input
+                value={productID}
+                onChange={(e) => {
+                  setProductID(e.target.value);
+                }}
+                placeholder="Enter product ID"
+                className="w-full h-12 px-4 rounded-xl border border-[#D9C2F0] bg-[#FCF8FF] text-[#4B2E68] outline-none focus:ring-2 focus:ring-[#8A5FBF] focus:border-[#8A5FBF] transition"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Product Name
+              </label>
+              <input
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+                placeholder="Enter product name"
+                className="w-full h-12 px-4 rounded-xl border border-[#D9C2F0] bg-[#FCF8FF] text-[#4B2E68] outline-none focus:ring-2 focus:ring-[#8A5FBF] focus:border-[#8A5FBF] transition"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Alternative Names
+              </label>
+              <input
+                value={altNames}
+                onChange={(e) => {
+                  setAltNames(e.target.value);
+                }}
+                placeholder="Enter alternative names"
+                className="w-full h-12 px-4 rounded-xl border border-[#D9C2F0] bg-[#FCF8FF] text-[#4B2E68] outline-none focus:ring-2 focus:ring-[#8A5FBF] focus:border-[#8A5FBF] transition"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Description
+              </label>
+              <input
+                value={discription}
+                onChange={(e) => {
+                  setDiscription(e.target.value);
+                }}
+                placeholder="Enter product description"
+                className="w-full h-12 px-4 rounded-xl border border-[#D9C2F0] bg-[#FCF8FF] text-[#4B2E68] outline-none focus:ring-2 focus:ring-[#8A5FBF] focus:border-[#8A5FBF] transition"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Product Images
+              </label>
+              <div className="rounded-2xl border border-dashed border-[#8A5FBF] bg-[#FCF8FF] p-4">
+                <input
+                  type="file"
+                  multiple
+                  onChange={(e) => {
+                    setImages(e.target.files);
+                  }}
+                  className="w-full text-gray-700 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:bg-[#8A5FBF] file:text-white file:font-medium file:cursor-pointer hover:file:opacity-90"
+                />
+                <p className="text-xs text-[#7A6598] mt-3">
+                  Upload multiple product images for Crystal Beauty listings.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Price
+              </label>
+              <input
+                value={price}
+                onChange={(e) => {
+                  setPrice(e.target.value);
+                }}
+                placeholder="Enter price"
+                className="w-full h-12 px-4 rounded-xl border border-[#D9C2F0] bg-[#FCF8FF] text-[#4B2E68] outline-none focus:ring-2 focus:ring-[#8A5FBF] focus:border-[#8A5FBF] transition"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Labeled Price
+              </label>
+              <input
+                value={labledPrice}
+                onChange={(e) => {
+                  setLabledPrice(e.target.value);
+                }}
+                placeholder="Enter labeled price"
+                className="w-full h-12 px-4 rounded-xl border border-[#D9C2F0] bg-[#FCF8FF] text-[#4B2E68] outline-none focus:ring-2 focus:ring-[#8A5FBF] focus:border-[#8A5FBF] transition"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Category
+              </label>
+              <select
+                value={category}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                }}
+                className="w-full h-12 px-4 rounded-xl border border-[#D9C2F0] bg-[#FCF8FF] text-[#4B2E68] outline-none focus:ring-2 focus:ring-[#8A5FBF] focus:border-[#8A5FBF] transition"
+              >
+                <option value="">Select category</option>
+                <option value="cream">cream</option>
+                <option value="facewash">facewash</option>
+                <option value="serum">serum</option>
+                <option value="toner">toner</option>
+                <option value="cleanser">cleanser</option>
+                <option value="moisturizer">moisturizer</option>
+                <option value="sunscreen">sunscreen</option>
+                <option value="foundation">foundation</option>
+                <option value="lipstick">lipstick</option>
+                <option value="shampoo">shampoo</option>
+                <option value="conditioner">conditioner</option>
+                <option value="bodylotion">body lotion</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-[#5B3E84]">
+                Stock
+              </label>
+              <input
+                value={stock}
+                onChange={(e) => {
+                  setStock(e.target.value);
+                }}
+                placeholder="Enter stock amount"
+                className="w-full h-12 px-4 rounded-xl border border-[#D9C2F0] bg-[#FCF8FF] text-[#4B2E68] outline-none focus:ring-2 focus:ring-[#8A5FBF] focus:border-[#8A5FBF] transition"
+              />
+            </div>
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-[#EADDF7] flex flex-col sm:flex-row justify-end gap-3">
             <button
-              type="button"
               onClick={() => navigate("/admin/products")}
-              className="px-6 py-3 rounded-2xl font-semibold border transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-              style={{
-                backgroundColor: "#ffffff",
-                color: "#8A5FBF",
-                borderColor: "#8A5FBF",
-              }}
+              className="px-8 h-12 rounded-xl border border-[#D9C2F0] bg-white text-[#6B4B93] font-semibold hover:bg-[#F8F1FF] active:scale-[0.98] transition"
             >
               Cancel
             </button>
 
             <button
-              onClick={AddProduct}
-              type="button"
-              className="px-6 py-3 rounded-2xl font-semibold text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-              style={{
-                backgroundColor: "#8A5FBF",
-              }}
+              onClick={addProduct}
+              className="px-8 h-12 rounded-xl bg-[#8A5FBF] text-white font-semibold shadow-lg hover:opacity-90 active:scale-[0.98] transition"
             >
-              Submit Product
+              Save Product
             </button>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
