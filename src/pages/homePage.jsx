@@ -4,6 +4,9 @@ import NotFoundPage from "./404Page";
 import ContactPage from "./contactusPage";
 import AboutPage from "./aboutPage";
 import ProductPage from "./productPage";
+import ProductOverview from "./productOverview";
+
+
 
 function HomeLandingPage() {
   return (
@@ -63,6 +66,7 @@ export default function HomePage() {
       <Routes>
         <Route index element={<HomeLandingPage />} />
         <Route path="products" element={<ProductPage />} />
+        <Route path="overview/:id" element={<ProductOverview />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />

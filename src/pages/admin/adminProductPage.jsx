@@ -193,7 +193,7 @@ export default function AdminProductPage() {
                               state: item,
                             });
                           }}
-                          className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                          className="px-3 py-1 bg-[#8A5FBF] text-white rounded-md hover:bg-blue-600 transition"
                         >
                           Edit
                         </button>

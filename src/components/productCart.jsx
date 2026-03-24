@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import ProductOverview from "../pages/productOverview";
+
 export default function ProductCart(props) {
   const product = props.product;
 
@@ -77,9 +80,11 @@ export default function ProductCart(props) {
           <span>ID: {product.productID}</span>
         </div>
 
-        <button className="w-full mt-5 h-[48px] rounded-2xl bg-[#8A5FBF] text-white font-semibold text-[15px] shadow-[0_8px_20px_rgba(138,95,191,0.25)] hover:bg-[#7648ad] active:scale-[0.98] transition-all duration-300">
-          View Product
-        </button>
+        <Link to={"/overview/" + product.productID}>
+          <button className="w-full mt-5 h-[48px] rounded-2xl bg-[#8A5FBF] text-white font-semibold text-[15px] shadow-[0_8px_20px_rgba(138,95,191,0.25)] hover:bg-[#7648ad] active:scale-[0.98] transition-all duration-300">
+            View Product
+          </button>
+        </Link>
       </div>
     </div>
   );
