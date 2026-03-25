@@ -1,37 +1,126 @@
+import axios from "axios";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function CheakoutPage() {
+    const navigate = useNavigate();
     const location = useLocation();
-    const [cart, setCart] = useState(location.state);
+
+    const [cart, setCart] = useState(() => {
+        if (location.state && Array.isArray(location.state)) {
+            return location.state;
+        }
+
+        try {
+            const savedCart = localStorage.getItem("cart");
+            if (savedCart) {
+                const parsedCart = JSON.parse(savedCart);
+                return Array.isArray(parsedCart) ? parsedCart : [];
+            }
+        } catch (error) {
+            console.error("Error reading cart from localStorage:", error);
+        }
+
+        return [];
+    });
+
+    const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(cart));
     }, [cart]);
 
     const updateQuantity = (index, change) => {
-        const updatedCart = [...cart];
-        const item = updatedCart[index];
+        setCart((prevCart) => {
+            const updatedCart = [...prevCart];
+            const item = updatedCart[index];
 
-        const unitPrice = item.price / item.quantity;
-        const newQuantity = item.quantity + change;
+            if (!item) return prevCart;
 
-        if (newQuantity < 1) {
-            return;
-        }
+            const currentQuantity = Number(item.quantity) || 1;
+            const currentPrice = Number(item.price) || 0;
+            const unitPrice = currentQuantity > 0 ? currentPrice / currentQuantity : currentPrice;
 
-        item.quantity = newQuantity;
-        item.price = unitPrice * newQuantity;
+            const newQuantity = currentQuantity + change;
 
-        setCart(updatedCart);
+            if (newQuantity < 1) {
+                return prevCart;
+            }
+
+            updatedCart[index] = {
+                ...item,
+                quantity: newQuantity,
+                price: unitPrice * newQuantity,
+            };
+
+            return updatedCart;
+        });
     };
 
     const removeItem = (index) => {
-        const updatedCart = cart.filter((_, itemIndex) => itemIndex !== index);
-        setCart(updatedCart);
+        setCart((prevCart) => prevCart.filter((_, itemIndex) => itemIndex !== index));
     };
 
-    const totalPrice = cart.reduce((total, item) => total + item.price, 0);
+    const totalPrice = cart.reduce((total, item) => {
+        return total + (Number(item.price) || 0);
+    }, 0);
+
+    async function purchaseCart() {
+        if (cart.length === 0) {
+            toast.error("Your cart is empty");
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            toast.error("Please login first");
+            navigate("/login");
+            return;
+        }
+
+        try {
+            setIsPlacingOrder(true);
+
+            const items = cart.map((item) => ({
+                productID: item.productID,
+                quantity: Number(item.quantity),
+            }));
+
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/api/orders`,
+                {
+                    address: "No 123, Main Street, New York, NY 10001",
+                    items: items,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log("Order placed successfully:", response.data);
+            toast.success(response?.data?.message || "Order placed successfully");
+
+            setCart([]);
+            localStorage.removeItem("cart");
+
+            navigate("/orders");
+        } catch (err) {
+            console.error("Order placing error:", err);
+            console.error("Backend response:", err?.response?.data);
+
+            toast.error(
+                err?.response?.data?.message ||
+                err?.response?.data?.error ||
+                "Failed to place order"
+            );
+        } finally {
+            setIsPlacingOrder(false);
+        }
+    }
 
     return (
         <div className="w-full min-h-[calc(100vh-100px)] bg-[#FCF8FF] px-4 py-10 flex flex-col items-center">
@@ -60,84 +149,92 @@ export default function CheakoutPage() {
                         </div>
 
                         <div className="p-4 md:p-6 flex flex-col gap-4">
-                            {
-                                cart.map(
-                                    (item, index) => {
-                                        return (
-                                            <div
-                                                key={index}
-                                                className="w-full bg-[#FCF8FF] border border-[#D9C2F0] rounded-3xl px-5 py-4 flex items-center justify-between transition-all duration-300 hover:shadow-md hover:border-[#8A5FBF]"
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-[56px] h-[56px] rounded-2xl bg-white border border-[#D9C2F0] flex items-center justify-center text-[#8A5FBF] font-bold shadow-sm">
-                                                        {index + 1}
-                                                    </div>
-
-                                                    <img
-                                                        src={item.image}
-                                                        alt={item.name}
-                                                        className="w-[64px] h-[64px] rounded-2xl object-cover border border-[#D9C2F0] bg-white shadow-sm"
-                                                    />
-
-                                                    <div>
-                                                        <h1 className="text-lg md:text-xl font-semibold text-[#8A5FBF]">
-                                                            {item.name}
-                                                        </h1>
-
-                                                        <p className="text-sm text-gray-500 mt-1">
-                                                            Ready for checkout
-                                                        </p>
-                                                        <div className="text-sm text-gray-600 mt-2 flex flex-wrap gap-3">
-                                                            <span className="px-3 py-1 rounded-full bg-white border border-[#D9C2F0]">
-                                                                Product ID: {item.productId}
-                                                            </span>
-                                                            <span className="px-3 py-1 rounded-full bg-white border border-[#D9C2F0]">
-                                                                Price: {item.price}
-                                                            </span>
-                                                            <span className="px-3 py-1 rounded-full bg-white border border-[#D9C2F0]">
-                                                                Quantity: {item.quantity}
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                            {cart.length > 0 ? (
+                                cart.map((item, index) => {
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="w-full bg-[#FCF8FF] border border-[#D9C2F0] rounded-3xl px-5 py-4 flex items-center justify-between transition-all duration-300 hover:shadow-md hover:border-[#8A5FBF]"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-[56px] h-[56px] rounded-2xl bg-white border border-[#D9C2F0] flex items-center justify-center text-[#8A5FBF] font-bold shadow-sm">
+                                                    {index + 1}
                                                 </div>
 
-                                                <div className="flex items-center gap-4">
-                                                    <div className="flex items-center gap-3 px-3 py-2 rounded-full bg-white border border-[#D9C2F0]">
-                                                        <button
-                                                            onClick={() => updateQuantity(index, -1)}
-                                                            className="w-8 h-8 rounded-full bg-[#FCF8FF] border border-[#D9C2F0] text-[#8A5FBF] font-bold hover:bg-white"
-                                                        >
-                                                            -
-                                                        </button>
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    className="w-[64px] h-[64px] rounded-2xl object-cover border border-[#D9C2F0] bg-white shadow-sm"
+                                                />
 
-                                                        <span className="min-w-[30px] text-center text-[#8A5FBF] font-semibold">
-                                                            {item.quantity}
+                                                <div>
+                                                    <h1 className="text-lg md:text-xl font-semibold text-[#8A5FBF]">
+                                                        {item.name}
+                                                    </h1>
+
+                                                    <p className="text-sm text-gray-500 mt-1">
+                                                        Ready for checkout
+                                                    </p>
+
+                                                    <div className="text-sm text-gray-600 mt-2 flex flex-wrap gap-3">
+                                                        <span className="px-3 py-1 rounded-full bg-white border border-[#D9C2F0]">
+                                                            Price: Rs. {item.price}
                                                         </span>
-
-                                                        <button
-                                                            onClick={() => updateQuantity(index, 1)}
-                                                            className="w-8 h-8 rounded-full bg-[#FCF8FF] border border-[#D9C2F0] text-[#8A5FBF] font-bold hover:bg-white"
-                                                        >
-                                                            +
-                                                        </button>
+                                                        <span className="px-3 py-1 rounded-full bg-white border border-[#D9C2F0]">
+                                                            Quantity: {item.quantity}
+                                                        </span>
                                                     </div>
-
-                                                    <div className="hidden sm:flex items-center justify-center px-4 py-2 rounded-full bg-white border border-[#D9C2F0] text-[#8A5FBF] text-sm font-medium">
-                                                        In Cart
-                                                    </div>
-
-                                                    <button
-                                                        onClick={() => removeItem(index)}
-                                                        className="px-4 py-2 rounded-full bg-white border border-red-200 text-red-500 text-sm font-medium hover:bg-red-50"
-                                                    >
-                                                        Delete
-                                                    </button>
                                                 </div>
                                             </div>
-                                        );
-                                    }
-                                )
-                            }
+
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex items-center gap-3 px-3 py-2 rounded-full bg-white border border-[#D9C2F0]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => updateQuantity(index, -1)}
+                                                        className="w-8 h-8 rounded-full bg-[#FCF8FF] border border-[#D9C2F0] text-[#8A5FBF] font-bold hover:bg-white"
+                                                    >
+                                                        -
+                                                    </button>
+
+                                                    <span className="min-w-[30px] text-center text-[#8A5FBF] font-semibold">
+                                                        {item.quantity}
+                                                    </span>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => updateQuantity(index, 1)}
+                                                        className="w-8 h-8 rounded-full bg-[#FCF8FF] border border-[#D9C2F0] text-[#8A5FBF] font-bold hover:bg-white"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+
+                                                <div className="hidden sm:flex items-center justify-center px-4 py-2 rounded-full bg-white border border-[#D9C2F0] text-[#8A5FBF] text-sm font-medium">
+                                                    In Cart
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeItem(index)}
+                                                    className="px-4 py-2 rounded-full bg-white border border-red-200 text-red-500 text-sm font-medium hover:bg-red-50"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="w-full bg-[#FCF8FF] border border-[#D9C2F0] rounded-3xl px-5 py-10 text-center">
+                                    <h2 className="text-xl font-semibold text-[#8A5FBF]">
+                                        Your cart is empty
+                                    </h2>
+                                    <p className="text-sm text-gray-500 mt-2">
+                                        Please add some products before checkout.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -162,7 +259,7 @@ export default function CheakoutPage() {
                             <div className="flex items-center justify-between text-sm text-gray-600">
                                 <span>Order Status</span>
                                 <span className="font-medium text-[#8A5FBF]">
-                                    Ready to Checkout
+                                    {cart.length > 0 ? "Ready to Checkout" : "Cart Empty"}
                                 </span>
                             </div>
 
@@ -175,12 +272,18 @@ export default function CheakoutPage() {
                                 </p>
                             </div>
 
-                            <Link
-                                to="/checkout"
-                                className="w-full mt-2 inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#8A5FBF] text-white font-semibold border border-[#8A5FBF] hover:opacity-90 transition-all duration-300 shadow-sm"
+                            <button
+                                type="button"
+                                onClick={purchaseCart}
+                                disabled={isPlacingOrder || cart.length === 0}
+                                className={`w-full mt-2 inline-flex items-center justify-center px-6 py-3 rounded-full text-white font-semibold border transition-all duration-300 shadow-sm ${
+                                    isPlacingOrder || cart.length === 0
+                                        ? "bg-gray-400 border-gray-400 cursor-not-allowed"
+                                        : "bg-[#8A5FBF] border-[#8A5FBF] hover:opacity-90"
+                                }`}
                             >
-                                Proceed Checkout
-                            </Link>
+                                {isPlacingOrder ? "Placing Order..." : "Order"}
+                            </button>
                         </div>
                     </div>
                 </div>
