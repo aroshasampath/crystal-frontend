@@ -5,6 +5,9 @@ import ContactPage from "./contactusPage";
 import AboutPage from "./aboutPage";
 import ProductPage from "./productPage";
 import ProductOverview from "./productOverview";
+import CartPage from "./cart";
+import Loginpage from "./loginPage";
+import CheakoutPage from "./cheakout";
 
 
 
@@ -57,18 +60,20 @@ function HomeLandingPage() {
 }
 
 
-
 export default function HomePage() {
   return (
     <div className="min-h-screen">
       <Header />
 
       <Routes>
+        <Route path="login" element={<Loginpage />} />
         <Route index element={<HomeLandingPage />} />
         <Route path="products" element={<ProductPage />} />
         <Route path="overview/:id" element={<ProductOverview />} />
         <Route path="about" element={<AboutPage />} />
+        <Route path="cheackout" element={<CheakoutPage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="cart" element={<CartPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>

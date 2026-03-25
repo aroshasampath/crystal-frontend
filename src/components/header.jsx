@@ -8,6 +8,12 @@ export default function Header() {
       </h1>
 
       <div className="flex items-center flex-wrap justify-center gap-5 md:gap-8 text-[16px] md:text-[18px] font-bold">
+        <Link
+          to="/login"
+          className="hover:underline hover:underline-offset-4 transition"
+        >
+          Login
+        </Link>
         <Link to="/" className="hover:underline hover:underline-offset-4 transition">
           Home
         </Link>
@@ -28,6 +34,12 @@ export default function Header() {
           className="hover:underline hover:underline-offset-4 transition"
         >
           Contact
+        </Link>
+        <Link
+          to="/cart"
+          className="hover:underline hover:underline-offset-4 transition"
+        >
+          Cart
         </Link>
       </div>
     </div>

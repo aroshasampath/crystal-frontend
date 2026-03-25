@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { AddToCart, LoadCart } from "../utills/cart";
 
 export default function ProductOverview() {
     const [status, setStatus] = useState("loading");
@@ -140,13 +141,29 @@ export default function ProductOverview() {
                                 </div>
 
                                 <div className="mt-5 flex flex-col sm:flex-row gap-3">
-                                    <button className="h-[44px] px-6 rounded-2xl bg-[#8A5FBF] text-white text-sm md:text-[15px] font-semibold shadow-[0_10px_25px_rgba(138,95,191,0.25)] hover:bg-[#7447ab] transition-all duration-300">
+                                    <button
+                                        onClick={() => {
+                                            AddToCart(product, 1)
+                                            toast.success("Add to cart successfully")
+                                        }}
+                                        className="h-[44px] px-6 rounded-2xl bg-[#8A5FBF] text-white text-sm md:text-[15px] font-semibold shadow-[0_10px_25px_rgba(138,95,191,0.25)] hover:bg-[#7447ab] transition-all duration-300"
+                                    >
                                         Add to Cart
                                     </button>
 
-                                    <button className="h-[44px] px-6 rounded-2xl border border-[#D9C2F0] bg-white text-[#8A5FBF] text-sm md:text-[15px] font-semibold hover:bg-[#FCF8FF] transition-all duration-300">
+                                    <Link
+                                        to="/cheackout"
+                                        state={[
+                                            {
+                                                ...product,
+                                                quantity: 1,
+                                                image: selectedImage || product.images?.[0]
+                                            }
+                                        ]}
+                                        className="h-[44px] px-6 rounded-2xl border border-[#D9C2F0] bg-white text-[#8A5FBF] text-sm md:text-[15px] font-semibold hover:bg-[#FCF8FF] transition-all duration-300 inline-flex items-center justify-center"
+                                    >
                                         Buy Now
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
