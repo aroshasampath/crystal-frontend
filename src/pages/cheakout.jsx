@@ -107,7 +107,7 @@ export default function CheakoutPage() {
             setCart([]);
             localStorage.removeItem("cart");
 
-            navigate("/orders");
+            
         } catch (err) {
             console.error("Order placing error:", err);
             console.error("Backend response:", err?.response?.data);
