@@ -27,27 +27,26 @@ function OrderDetailsModal({ order, close, updateStatus }) {
   if (!order) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-4">
-      <div className="bg-white w-full max-w-2xl rounded-2xl p-6 relative shadow-2xl animate-fadeIn">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-2 sm:px-4">
+      <div className="bg-white w-full max-w-full sm:max-w-2xl rounded-2xl p-4 sm:p-6 relative shadow-2xl animate-fadeIn max-h-[90vh] overflow-y-auto">
         <button
           onClick={close}
-          className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
+          className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
         >
           ✕
         </button>
 
-        <h2 className="text-2xl font-semibold mb-4 text-[#8A5FBF] border-b pb-2">
+        <h2 className="text-lg sm:text-2xl font-semibold mb-4 text-[#8A5FBF] border-b pb-2">
           Order #{order.orderID}
         </h2>
 
-        <div className="grid grid-cols-2 gap-4 text-sm mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm mb-5">
           <p><span className="font-medium text-gray-600">Customer:</span> {order.customerName}</p>
           <p><span className="font-medium text-gray-600">Phone:</span> {order.phone}</p>
           <p><span className="font-medium text-gray-600">Email:</span> {order.email}</p>
           <p><span className="font-medium text-gray-600">Address:</span> {order.address}</p>
         </div>
 
-        {/* ✅ STATUS CHANGE HERE */}
         <div className="mb-4">
           <p className="text-sm font-medium text-gray-600 mb-1">Status</p>
 
@@ -78,17 +77,19 @@ function OrderDetailsModal({ order, close, updateStatus }) {
               >
                 <img
                   src={item.image}
-                  className="w-14 h-14 object-cover rounded-md border"
+                  className="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-md border"
                 />
 
                 <div className="flex-1">
-                  <p className="font-medium text-gray-800">{item.name}</p>
+                  <p className="font-medium text-gray-800 text-sm sm:text-base">
+                    {item.name}
+                  </p>
                   <p className="text-xs text-gray-500">
                     Qty: {item.quantity}
                   </p>
                 </div>
 
-                <p className="text-[#8A5FBF] font-semibold text-sm">
+                <p className="text-[#8A5FBF] font-semibold text-xs sm:text-sm">
                   Rs. {item.price * item.quantity}
                 </p>
               </div>
@@ -96,7 +97,7 @@ function OrderDetailsModal({ order, close, updateStatus }) {
           </div>
         </div>
 
-        <div className="text-right mt-5 text-lg font-bold text-[#8A5FBF]">
+        <div className="text-right mt-5 text-base sm:text-lg font-bold text-[#8A5FBF]">
           Total: Rs. {order.total}
         </div>
       </div>
@@ -160,7 +161,6 @@ export default function AdminOrderPage() {
         )
       );
 
-      // ✅ modal ekath update wenna
       setSelectedOrder((prev) =>
         prev ? { ...prev, status: newStatus } : prev
       );
@@ -185,28 +185,28 @@ export default function AdminOrderPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FCF8FF] p-6">
+    <div className="min-h-screen bg-[#FCF8FF] p-3 sm:p-6">
 
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-[#8A5FBF]">
+        <h1 className="text-xl sm:text-3xl font-bold text-[#8A5FBF]">
           Orders Management
         </h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="text-gray-500 text-xs sm:text-sm mt-1">
           Manage and track customer orders
         </p>
       </div>
 
-      <div className="bg-white p-4 rounded-xl shadow-sm border mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border mb-6 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
         <input
           type="text"
-          placeholder="Search by Order ID or Customer..."
-          className="px-4 py-2 border rounded-lg w-full md:w-1/3 focus:ring-2 focus:ring-[#8A5FBF] outline-none"
+          placeholder="Search..."
+          className="px-3 py-2 border rounded-lg w-full md:w-1/3 focus:ring-2 focus:ring-[#8A5FBF]"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <select
-          className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#8A5FBF] outline-none bg-white"
+          className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#8A5FBF] bg-white"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -232,55 +232,45 @@ export default function AdminOrderPage() {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <table className="w-full text-sm">
+          {/* ✅ TABLE SCROLL FIX */}
+          <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+            <table className="min-w-[700px] w-full text-sm">
               <thead className="bg-[#D9C2F0]/40 text-gray-700">
                 <tr>
-                  <th className="p-4 text-left">Order</th>
-                  <th className="p-4 text-left">Customer</th>
-                  <th className="p-4 text-left">Phone</th>
-                  <th className="p-4 text-left">Total</th>
-                  <th className="p-4 text-left">Items</th>
-                  <th className="p-4 text-left">Date</th>
-                  <th className="p-4 text-left">Status</th>
-                  <th className="p-4 text-center">Action</th>
+                  <th className="p-3 text-left">Order</th>
+                  <th className="p-3 text-left">Customer</th>
+                  <th className="p-3 text-left">Phone</th>
+                  <th className="p-3 text-left">Total</th>
+                  <th className="p-3 text-left">Items</th>
+                  <th className="p-3 text-left">Date</th>
+                  <th className="p-3 text-left">Status</th>
+                  <th className="p-3 text-center">Action</th>
                 </tr>
               </thead>
 
               <tbody>
                 {filteredOrders.map((order, index) => (
-                  <tr key={index} className="border-t hover:bg-[#FCF8FF] transition">
-                    <td className="p-4 font-medium text-gray-800">
-                      #{order.orderID}
-                    </td>
-
-                    <td className="p-4">
-                      <p className="font-medium">{order.customerName}</p>
+                  <tr key={index} className="border-t hover:bg-[#FCF8FF]">
+                    <td className="p-3 font-medium">#{order.orderID}</td>
+                    <td className="p-3">
+                      <p>{order.customerName}</p>
                       <p className="text-xs text-gray-500">{order.email}</p>
                     </td>
-
-                    <td className="p-4">{order.phone}</td>
-
-                    <td className="p-4 font-semibold text-[#8A5FBF]">
+                    <td className="p-3">{order.phone}</td>
+                    <td className="p-3 font-semibold text-[#8A5FBF]">
                       Rs. {order.total}
                     </td>
-
-                    <td className="p-4">
-                      {order.items?.length} items
-                    </td>
-
-                    <td className="p-4 text-gray-500 text-xs">
+                    <td className="p-3">{order.items?.length} items</td>
+                    <td className="p-3 text-xs text-gray-500">
                       {new Date(order.date).toLocaleDateString()}
                     </td>
-
-                    <td className="p-4">
+                    <td className="p-3">
                       <StatusBadge status={order.status} />
                     </td>
-
-                    <td className="p-4 text-center">
+                    <td className="p-3 text-center">
                       <button
                         onClick={() => setSelectedOrder(order)}
-                        className="px-4 py-1.5 text-sm bg-[#8A5FBF] text-white rounded-lg hover:bg-[#7448aa] transition shadow-sm"
+                        className="px-3 py-1.5 text-xs sm:text-sm bg-[#8A5FBF] text-white rounded-lg"
                       >
                         View
                       </button>
