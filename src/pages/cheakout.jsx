@@ -25,7 +25,7 @@ export default function CheakoutPage() {
         return [];
     });
 
-    // ✅ NEW STATES
+    
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
@@ -79,13 +79,13 @@ export default function CheakoutPage() {
             return;
         }
 
-        // ✅ VALIDATION
+        
         if (!name || !phone || !address) {
             toast.error("Please fill all fields");
             return;
         }
 
-        // ✅ OPTIONAL PHONE VALIDATION
+        
         if (!/^[0-9]{10}$/.test(phone)) {
             toast.error("Invalid phone number");
             return;
@@ -103,7 +103,7 @@ export default function CheakoutPage() {
                `${import.meta.env.VITE_API_URL}/api/orders`,{
 
                 customerName: name === "" ? "Guest" : name,
-                name: name === "" ? "Guest" : name, // ✅ FIX එක
+                name: name === "" ? "Guest" : name, 
                 phone,
                 address,
                  items,
@@ -119,7 +119,7 @@ export default function CheakoutPage() {
             setCart([]);
             localStorage.removeItem("cart");
 
-            // OPTIONAL: clear fields
+            
             setName("");
             setPhone("");
             setAddress("");
@@ -138,7 +138,7 @@ export default function CheakoutPage() {
         <div className="w-full min-h-screen bg-[#FCF8FF] px-3 sm:px-6 py-8 flex justify-center">
             <div className="w-full max-w-6xl">
 
-                {/* HEADER */}
+                
                 <div className="text-center mb-6">
                     <p className="text-[#8A5FBF] text-xs sm:text-sm uppercase tracking-widest">
                         Secure Checkout
@@ -151,10 +151,10 @@ export default function CheakoutPage() {
                     </p>
                 </div>
 
-                {/* GRID */}
+            
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-                    {/* CART */}
+                    
                     <div className="lg:col-span-2 bg-white rounded-3xl border shadow-sm">
                         <div className="p-4 border-b">
                             <h2 className="font-semibold text-[#8A5FBF] text-lg">
@@ -213,7 +213,7 @@ export default function CheakoutPage() {
                         </div>
                     </div>
 
-                    {/* SUMMARY */}
+                    
                     <div className="bg-white rounded-3xl border shadow-sm p-4 h-fit">
                         <h2 className="font-semibold text-[#8A5FBF] mb-3">
                             Summary
@@ -231,7 +231,7 @@ export default function CheakoutPage() {
                             </span>
                         </div>
 
-                        {/* ✅ NEW FORM */}
+                        
                         <div className="space-y-2 mb-4">
 
                             <input
