@@ -23,6 +23,10 @@ function ChangeRoleModal({ user, close, onUpdated }) {
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState(user?.role || "user");
 
+  useEffect(() => {
+    setSelectedRole(user?.role || "user");
+  }, [user]);
+
   if (!user) return null;
 
   const updateRole = async () => {
